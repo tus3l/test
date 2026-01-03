@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الاختبارات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .subject-selection {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .subject-selection h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .subject-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.4em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 15px;
+            min-width: 300px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .subject-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .subject-btn.web {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .subject-btn.web:hover {
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4);
+        }
+
+        .welcome-screen {
+            text-align: center;
+        }
+
+        .welcome-screen h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-right: 5px solid #667eea;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .option.wrong {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            width: 100%;
+            margin-top: 30px;
+            padding: 18px;
+            font-size: 1.3em;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .mistakes-section {
+            text-align: right;
+            margin-top: 40px;
+            padding: 30px;
+            background: #fff3cd;
+            border-radius: 15px;
+        }
+
+        .mistakes-section h3 {
+            color: #856404;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .mistake-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-right: 4px solid #dc3545;
+        }
+
+        .mistake-question {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .mistake-details {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .correct-answer {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .your-answer {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .review-section {
+            margin-bottom: 40px;
+        }
+
+        .review-title {
+            color: #667eea;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .review-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-right: 4px solid #667eea;
+        }
+
+        .review-question {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .review-answer {
+            background: #10b981;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .review-answer.wrong {
+            background: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+
+            .subject-btn {
+                min-width: 250px;
+                padding: 15px 30px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 نظام الاختبارات</h1>
+        
+        <!-- Subject Selection Screen -->
+        <div id="subjectSelection" class="subject-selection">
+            <h2>اختر المادة</h2>
+            <button class="subject-btn" onclick="selectSubject('business')">📊 ريادة الأعمال</button>
+            <button class="subject-btn web" onclick="selectSubject('web')">💻 مبادئ صفحات الإنترنت</button>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="welcome-screen hidden">
+            <h2 id="subjectTitle"></h2>
+            <p id="examInfo"></p>
+            <button class="btn" onclick="startExam()">ابدأ الاختبار</button>
+            <button class="btn" onclick="showReview()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">راجع المنهج ثم ابدأ الاختبار</button>
+            <button class="btn" onclick="backToSubjects()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">العودة لاختيار المادة</button>
+        </div>
+
+        <!-- Review Screen -->
+        <div id="reviewScreen" class="hidden">
+            <h2 style="color: #f59e0b; margin-bottom: 30px;">📚 مراجعة المنهج الكامل</h2>
+            
+            <div class="review-section">
+                <h3 class="review-title" id="reviewTFTitle"></h3>
+                <div id="reviewTrueFalse"></div>
+            </div>
+            
+            <div class="review-section">
+                <h3 class="review-title" id="reviewMCTitle"></h3>
+                <div id="reviewMultipleChoice"></div>
+            </div>
+            
+            <button class="btn submit-btn" onclick="startExamFromReview()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">الآن ابدأ الاختبار</button>
+            <button class="btn" onclick="backToWelcome()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">العودة للصفحة الرئيسية</button>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="examScreen" class="hidden">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div id="questionsContainer"></div>
+            <button class="btn submit-btn" onclick="submitExam()">تصحيح الاختبار</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden">
+            <div class="result-container">
+                <h2>🎉 انتهى الاختبار!</h2>
+                <div class="score" id="finalScore"></div>
+                <div class="result-message" id="resultMessage"></div>
+                <button class="btn" onclick="restartExam()">إعادة الاختبار</button>
+                <button class="btn" onclick="backToSubjects()" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);">العودة لاختيار المادة</button>
+            </div>
+            <div id="mistakesSection" class="mistakes-section hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات ريادة الأعمال
+        const businessData = {
+            trueFalse: [
+                { q: "ريادة الأعمال هي إنشاء مشروع ذي قيمة اقتصادية مضافة، يتسم بالجودة، ويتصف بالمخاطرة.", a: "خطأ" },
+                { q: "ريادة الأعمال المؤسسية هي أن تكون ريادة أعمال من خارج المنظمات القائمة.", a: "خطأ" },
+                { q: "عناصر ريادة الأعمال هي رائد الأعمال، والمنظمة، والفرصة، والموارد.", a: "صح" },
+                { q: "أحد الفروق بين ريادة الأعمال والمنشآت الصغيرة أن المنشآت الصغيرة لا تتطلب أي إبداع أو ابتكار.", a: "صح" },
+                { q: "تعزيز ثقافة ريادة الأعمال أحد المستهدفات لرؤية المملكة 2030.", a: "صح" },
+                { q: "إجراء الدراسة الأولية للمشروع، هو أحد عوامل النجاح المتعلقة بشخصية رائد الأعمال.", a: "خطأ" },
+                { q: "منظومة ريادة الأعمال: هي الأفراد، والمنظمات والجهات المحيطة برائد الأعمال، والتي تعين أو تعيق توجه الفرد نحو ريادة الأعمال.", a: "صح" },
+                { q: "المخاطرة وعدم استقرار الدخل من عناصر منظومة ريادة الأعمال.", a: "خطأ" },
+                { q: "من عوامل النجاح لريادة الأعمال: تمكين الخريجين من امتلاك أفكار مشروعات أعمال تجارية ذات التقنية الحديثة.", a: "خطأ" },
+                { q: "الثقافات التي تدعم مفاهيم التقليد والرتابة والنمطية هي التي تشجع سلوكيات ريادة الأعمال.", a: "خطأ" },
+                { q: "العقلية الريادية هي القدرة على تحديد الفرص وتحويلها إلى مشاريع تخلق قيمة للعملاء.", a: "صح" },
+                { q: "المهارات الرئيسة لرائد الأعمال هي المهارات الإدراكية، والإنسانية، والفنية.", a: "صح" },
+                { q: "رائد الأعمال لديه شغف مثل الفنان أو الرياضي يستمتع بالعملية بدلاً من النتيجة.", a: "صح" },
+                { q: "المهارات الإدراكية هي القدرة على إنجاز العمل مع الآخرين كأفراد وكمجموعات. ويتضمن ذلك مهارات التعاون مع الآخرين والتعامل معهم.", a: "خطأ" },
+                { q: "من آداب السلوك العام عدم تلويث البيئة والحرص على نظافة المكان.", a: "صح" },
+                { q: "يقتصر الإبداع على الأذكياء فقط.", a: "خطأ" },
+                { q: "لا بد أن يكون الاختراع متضمناً شيئاً جديداً ولم يسبق معرفته.", a: "صح" },
+                { q: "من سمات الشخص المبدع أنه دائماً ما ينظر للأمور من وجهة نظر مختلفة عن الطريقة العادية التي يفكر بها الآخرون.", a: "صح" },
+                { q: "الابتكار هو فكرة جديدة لحل مشكلة قائمة وقابلة للإنتاج الصناعي.", a: "خطأ" },
+                { q: "الفرق بين الاختراع والابتكار أن الاختراع هو الإتيان بشيء جديد لم يسبق إليه، أما الابتكار فهو تحويل ذلك الشيء أو تلك الفكرة إلى عمليات أو منتجات جديدة لها تأثير اقتصادي.", a: "صح" },
+                { q: "العلامة التجارية عادة ما تكون كلمة، أو اسماً، أو عبارة، أو شعاراً، أو رمزاً، أو تصميماً، أو صورة أو بعض هذه العناصر مجتمعة.", a: "صح" },
+                { q: "المعيار المعرفي في تقييم الفكرة يعني: جاذبية الفكرة ووجود طلب كافٍ في السوق للمنتجات.", a: "خطأ" },
+                { q: "الذكاء الاصطناعي هو سلوك وخصائص معينة تتسم بها البرامج الحاسوبية، تجعلها تحاكي القدرات الذهنية البشرية.", a: "صح" },
+                { q: "خطوات تحويل الفكرة إلى فرصة هي: توليد الفكرة، صياغة الفكرة، تسويق الفكرة، تمويل الفكرة.", a: "خطأ" },
+                { q: "حضور المعارض التجارية ذات العلاقة بمشروعك أو فكرتك سيمكنك من الاتصال بالأشخاص الذين يشبهونك في التفكير.", a: "صح" },
+                { q: "نموذج الأعمال هو \"الطريقة التي تستخدمها الشركة لإيجاد القيمة والربح\".", a: "صح" },
+                { q: "القنوات هي حلقة الوصل بين العملاء والمنشأة.", a: "صح" },
+                { q: "يعتبر التمويل أحد مكونات نموذج الأعمال الرئيسة الذي يصف المعلومات المتعلقة بالتكلفة وطرق التسعير وهيكل الإيرادات.", a: "خطأ" },
+                { q: "من خلال نموذج الأعمال يمكن تلمس مدى ترابط المتغيرات والمجموعات بعضها مع بعض.", a: "صح" },
+                { q: "البساطة تعني أنه يمكن تكرار نموذج الأعمال في موقع آخر غير الموقع الذي نشأ فيه.", a: "خطأ" },
+                { q: "تحديد الغرض من العرض التقديمي هي أولى خطوات تصميم وكتابة العرض التقديمي.", a: "صح" },
+                { q: "يمر العرض التقديمي بثلاث مراحل هي: (المقدمة، ومتن العرض، والخاتمة).", a: "صح" },
+                { q: "الاستعجال والسرعة في العرض، تؤدي إلى جذب الانتباه وقدرة الحضور على الاستيعاب الكافي للعرض.", a: "خطأ" },
+                { q: "استخدام أسلوب سبعة في سبعة أي لا تزيد عن سبعة أسطر في كل الشريحة و (7) كلمات في كل سطر.", a: "صح" },
+                { q: "ازدحام الشريحة بالمعلومات الكثيرة التي يصعب قراءتها أو رؤيتها يدل على معرفتك العميقة.", a: "خطأ" },
+                { q: "النقطة الأساسية في حديث المصعد أن يكون حديثاً سريعاً لا يتجاوز في مدته الزمنية حاجز الدقيقتين.", a: "صح" }
+            ],
+            multipleChoice: [
+                { q: "هي النشاط الذي ينصب على إنشاء عمل مبدع ويقدم فعالية اقتصادية مضافة.", a: "ريادة الأعمال" },
+                { q: "من أشكال العمل الريادي:", a: "أن تكون صاحب محل بيع أجهزة كهربائية" },
+                { q: "تتسم المشروعات الريادية من حيث المخاطر بأنها:", a: "مخاطر مرتفعة ولكنها مدروسة" },
+                { q: "تتصف أهداف ريادة الأعمال الاجتماعية بأنها:", a: "تجمع بين الأهداف الاقتصادية والاجتماعية معاً" },
+                { q: "تختلف ريادة الأعمال عن المنشآت الصغيرة بالآتي:", a: "جميع ما سبق" },
+                { q: "هذا العنصر ليس من عناصر ريادة الأعمال:", a: "المخاطرة" },
+                { q: "تهدف حاضنات الأعمال إلى تذليل المصاعب أمام مشروعات الشباب المتوسطة والصغيرة من خلال استضافة تلك المشروعات في:", a: "مراحلها التأسيسية وترعاها حتى مرحلة النضج" },
+                { q: "من الجهات الحكومية التي توفر التمويل المالي اللازم للمشروعات الريادية في السعودية:", a: "بنك التنمية الاجتماعية" },
+                { q: "تعتبر البنوك التجارية إحدى جهات ..... التي توفر التمويل اللازم للمشروعات الريادية في المملكة العربية السعودية.", a: "القطاع الخاص" },
+                { q: "هو عبارة عن أسلوب يقوم بتمويل المشروع بمبدأ المشاركة وليس الإقراض ويقبل المخاطرة.", a: "رأس المال الجريء" },
+                { q: "إذا كنت ترغب في نجاح مشروعك الريادي وتقليل احتمالية فشله فيجب عليك أن تعمل:", a: "وفقاً لخطة أعمال جيدة خاصة بمشروعك" },
+                { q: "من بين السمات التي يجب أن تتوافر في رائد الأعمال:", a: "أنه لا يخشى الفشل" },
+                { q: "تتعدد الصفات الواجب توافرها في رائد الأعمال منها ما يلي:", a: "كل ما سبق" },
+                { q: "حتى تستطيع أن تكون رائد أعمال ناجح فيجب أن تكون لديك القدرة على:", a: "البحث عن الأفكار الجديدة" },
+                { q: "إذا كنت شخص لا تقبل تحمل المخاطرة وتبحث عن عمل فأي الأعمال التالية سوف تتجه إليها:", a: "العمل غير الحر من خلال الوظيفة" },
+                { q: "أحد هذه العناصر ليس من سمات رائد الأعمال:", a: "تعدد الاهتمامات" },
+                { q: "تعتبر مرحلة ..... هي آخر مرحلة من مراحل العملية الابتكارية.", a: "تطوير الفكرة" },
+                { q: "تعني القدرة على التفكير في بدائل أخرى متعددة وسرعة التكيف والانتقال والتحول بالتفكير إلى اتجاهات تفكير متعددة ومتنوعة مع سرعة الاستيعاب والتكيف مع الأحداث الجديدة.", a: "المرونة" },
+                { q: "تعني أن الشخص المبدع لديه قدرة عالية على التركيز لفترات طويلة في مجال اهتمامه على الرغم من المعوقات التي تحدث.", a: "مواصلة الاتجاه" },
+                { q: "تعتبر خدمات الصيرفة الإلكترونية نوعاً من أنواع الابتكار في مجال:", a: "الخدمات" },
+                { q: "ابتكار ..... هو الابتكار الذي يأتي بطريقة جديدة أو تكنولوجيا جديدة تغير طريقة العمل أو الإنتاج بما يحقق إنتاجية أعلى، أو استخدام مواد أقل أو تحسين المنتجات.", a: "العمليات" },
+                { q: "تعتبر خطوة .................... هي ثاني خطوة من خطوات تحويل الفكرة إلى فرصة.", a: "صياغة الفكرة" },
+                { q: "هي عقد بين المخترع والدولة يتمكن من خلاله المخترع من تملك الاختراع لفترة زمنية معينة مقابل الإفصاح عنه للجميع.", a: "براءة الاختراع" },
+                { q: "لكي يمكنك الحفاظ على حقوقك المالية من الابتكارات التي تتوصل إليها فعليك القيام بما يلي:", a: "الحصول على حقوق الملكية الفكرية" },
+                { q: "التالي ليس من أنواع حقوق النشر:", a: "العلامة التجارية" },
+                { q: "رائد الأعمال يمكنه تقييم الفكرة من خلال هذه المعايير ما عدا واحداً منها هو:", a: "التوافقي" },
+                { q: "من ضمن فوائد نماذج العمل التجاري:", a: "اللغة المشتركة" },
+                { q: "يقصد \"بالقيم المقترحة\" كأحد أركان البناء في نموذج الأعمال التجاري ما يلي:", a: "حزمة المنتجات والخدمات التي تخلق قيمة للعملاء" },
+                { q: "يقصد \"بالشراكات الرئيسة\" كأحد أركان البناء في نموذج الأعمال التجاري ما يلي:", a: "الموردين والموزعين والشركاء الذين يساهمون في نجاح المشروع" },
+                { q: "هو أحد أركان البناء في نموذج العمل التجاري الذي يصف أهم الأصول اللازمة لنجاح العمل التجاري.", a: "الموارد الرئيسة" },
+                { q: "من بين عوامل قياس نجاح نموذج الأعمال التي يجب عليك كرائد أعمال الحرص على توافرها في نموذج العمل الخاص بمشروعك هي:", a: "قابلية التنقل" },
+                { q: "من ضمن عوامل نجاح العروض المرئية ما يلي:", a: "اختيار برنامج العرض المناسب لما تقدمه وأن تجيد التعامل معه" },
+                { q: "من ضمن النصائح التي يجب العمل بها لتقديم عرض ناجح ما يلي:", a: "التحضير والتدريب الجيد على العرض" },
+                { q: "من ضمن الأخطاء الشائعة عند تحضير العرض التقديمي ما يلي:", a: "استخدام خط صغير جداً" },
+                { q: "يعتمد نجاح العرض على شخصية العارض والتي تتمثل فيما يلي:", a: "المظهر ولغة الجسد ونبرة الصوت ولغة التحدث" },
+                { q: "من ضمن الأخطاء الشائعة في طريقة العرض التقديمي ما يلي:", a: "القراءة حرفياً من الشرائح" }
+            ]
+        };
+
+        // بيانات مبادئ صفحات الإنترنت
+        const webData = {
+            trueFalse: [
+                { q: "المستندات النصية التشعبية تسمى Hyperlink.", a: "خطأ" },
+                { q: "HTTP هو اختصار لجملة Hyper Text Transfer Protocol.", a: "صح" },
+                { q: "URL اختصار لجملة Uniform Resource Local.", a: "خطأ" },
+                { q: "HTML هي لغة برمجة مثل Java و C وتحتاج إلى مترجم compiler.", a: "خطأ" },
+                { q: "وسم <title> يستخدم لعنوان رأس الصفحة.", a: "صح" },
+                { q: "نستخدم وسم <br> لتغيير لون الصفحة.", a: "خطأ" },
+                { q: "text من أهم خصائص وسم <body> ويستخدم لتغيير لون النص في الصفحة.", a: "صح" },
+                { q: "يتم حفظ الملف بعد الانتهاء بهذا الشكل: filename.hmtl.", a: "خطأ" },
+                { q: "الوسم <body> يحوي جميع محتويات الصفحة بما فيها نصوص وصفحات تشعبية وصور.", a: "صح" },
+                { q: "يستخدم الوسم <p> لإنهاء سطر والنزول سطرين وليس له وسم نهاية.", a: "خطأ" },
+                { q: "يستخدم وسم التعليق لإدراج تعليق على الكود.", a: "صح" },
+                { q: "الوسم <hn> يستخدم لتحديد حجم العناوين، ويأخذ n قيمة من 1 - 6.", a: "صح" },
+                { q: "تحديد حجم النص المدخل يتم من خلال الخاصية maxlength.", a: "خطأ" },
+                { q: "لا يمكن تضمين CSS في مستند HTML أو وضعها في ملف منفصل.", a: "خطأ" },
+                { q: "يمكن وضع قائمة منسدلة في النموذج باستخدام الوسم SELECT.", a: "صح" },
+                { q: "الوسم <textarea> يستخدم لإدراج منطقة تعليقات.", a: "صح" },
+                { q: "يمكن أن نستخدم لغة الجافاسكربت للتحقق من البيانات وخاصة في النماذج.", a: "صح" },
+                { q: "تستخدم لدمج خلايا الصفوف في الجداول ويجب تحديد عدد الخلايا من خلال خاصية rowspan.", a: "صح" },
+                { q: "نضع في خاصية METHOD الصفحة التي سيتم إرسال بيانات النموذج إليها.", a: "خطأ" },
+                { q: "من أشهر البرامج المساعدة لتصميم وبناء المواقع DREAMWEAVER المقدم من شركة أدوبي.", a: "صح" },
+                { q: "باستخدام CSS نستطيع التحكم بالروابط التشعبية ومن حالات الارتباط a:link - رابط عادي غير مرتبط.", a: "صح" },
+                { q: "لإضافة تعليق في CSS نستخدم العلامة //.", a: "خطأ" }
+            ],
+            multipleChoice: [
+                { q: "لتغيير نوع الخط نستخدم خاصية:", a: "face" },
+                { q: "لإضافة صورة نستخدم الوسم:", a: "img" },
+                { q: "لتغيير لون الروابط التي تمت زيارتها نستخدم الخاصية:", a: "vlink" },
+                { q: "يستخدم هذا الوسم لترك مسافة فارغة بمقدار حرف واحد:", a: "&nbsp;" },
+                { q: "تحديد المسافة بين خلايا الجدول من خلال الخاصية:", a: "cellspacing" },
+                { q: "خاصية تحدد إمكانية ظهور أو عدم ظهور الأشرطة العمودية والأفقية داخل الإطار:", a: "scrolling" },
+                { q: "HTML اختصار لجملة:", a: "Hyper Text Markup Language" },
+                { q: "لإضافة أوامر CSS داخل ملف HTML نستخدم وسم:", a: "style" },
+                { q: "يحفظ ملف الجافاسكربت في ملف خارجي باسم:", a: "script.js" },
+                { q: "خاصية يستخدم في الحالات التي نحصل من خلالها على أكثر من جواب لنفس السؤال:", a: "checkbox" },
+                { q: "لإدراج نموذج داخل الصفحة يستخدم هذا الوسم:", a: "form" },
+                { q: "يوجد خاصيتين مهمة في النماذج وهي:", a: "Method - Action" },
+                { q: "CSS اختصار لـ:", a: "Cascading Style Sheets" }
+            ]
+        };
+
+        let currentSubject = null;
+        let currentExam = [];
+        let userAnswers = {};
+
+        // اختيار المادة
+        function selectSubject(subject) {
+            currentSubject = subject;
+            const data = subject === 'business' ? businessData : webData;
+            const title = subject === 'business' ? '📊 اختبار ريادة الأعمال' : '💻 اختبار مبادئ صفحات الإنترنت';
+            
+            document.getElementById('subjectTitle').textContent = title;
+            document.getElementById('examInfo').innerHTML = `
+                سيتم اختيار 20 سؤال صح وخطأ + 20 سؤال اختيارات متعددة بشكل عشوائي<br>
+                الدرجة الكلية: 40 درجة<br>
+                يمكنك مراجعة أخطائك في النهاية
+            `;
+            
+            document.getElementById('subjectSelection').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        // العودة لاختيار المادة
+        function backToSubjects() {
+            currentSubject = null;
+            userAnswers = {};
+            currentExam = [];
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('subjectSelection').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // وظيفة لتوليد خيارات خاطئة
+        function generateWrongOptions(correctAnswer, allAnswers) {
+            const wrongOptions = allAnswers.filter(ans => ans !== correctAnswer);
+            const shuffled = wrongOptions.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 3);
+        }
+
+        // وظيفة لخلط المصفوفة
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // وظيفة لبدء الاختبار
+        function startExam() {
+            const data = currentSubject === 'business' ? businessData : webData;
+            
+            // اختيار 20 سؤال عشوائي من كل نوع
+            const selectedTrueFalse = shuffleArray(data.trueFalse).slice(0, 20);
+            const selectedMultipleChoice = shuffleArray(data.multipleChoice).slice(0, 20);
+
+            // جمع كل الإجابات الممكنة لأسئلة الاختيارات
+            const allMCAnswers = data.multipleChoice.map(q => q.a);
+
+            // إعداد أسئلة الصح والخطأ
+            currentExam = selectedTrueFalse.map((q, i) => ({
+                id: `tf_${i}`,
+                type: 'tf',
+                question: q.q,
+                correctAnswer: q.a,
+                options: ['صح', 'خطأ']
+            }));
+
+            // إعداد أسئلة الاختيارات المتعددة مع خيارات خاطئة
+            selectedMultipleChoice.forEach((q, i) => {
+                const wrongOptions = generateWrongOptions(q.a, allMCAnswers);
+                const allOptions = shuffleArray([q.a, ...wrongOptions]);
+                
+                currentExam.push({
+                    id: `mc_${i}`,
+                    type: 'mc',
+                    question: q.q,
+                    correctAnswer: q.a,
+                    options: allOptions
+                });
+            });
+
+            // خلط جميع الأسئلة
+            currentExam = shuffleArray(currentExam);
+
+            // عرض الاختبار
+            displayExam();
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('reviewScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+        }
+
+        // وظيفة لعرض الاختبار
+        function displayExam() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            currentExam.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                questionNumber.textContent = `السؤال ${index + 1} من 40`;
+                
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = q.question;
+                
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+                
+                q.options.forEach(opt => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = opt;
+                    optionDiv.onclick = function() {
+                        selectOption(q.id, opt, this);
+                    };
+                    optionsDiv.appendChild(optionDiv);
+                });
+                
+                questionDiv.appendChild(questionNumber);
+                questionDiv.appendChild(questionText);
+                questionDiv.appendChild(optionsDiv);
+                container.appendChild(questionDiv);
+            });
+        }
+
+        // وظيفة لاختيار إجابة
+        function selectOption(questionId, answer, element) {
+            // إزالة التحديد السابق
+            const siblings = element.parentElement.children;
+            for (let sibling of siblings) {
+                sibling.classList.remove('selected');
+            }
+            
+            // تحديد الخيار الجديد
+            element.classList.add('selected');
+            userAnswers[questionId] = answer;
+
+            // تحديث شريط التقدم
+            const progress = (Object.keys(userAnswers).length / currentExam.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // وظيفة لتصحيح الاختبار
+        function submitExam() {
+            if (Object.keys(userAnswers).length < currentExam.length) {
+                if (!confirm('لم تجب على جميع الأسئلة. هل تريد التصحيح؟')) {
+                    return;
+                }
+            }
+
+            let correctCount = 0;
+            const mistakes = [];
+
+            currentExam.forEach((q, index) => {
+                const userAnswer = userAnswers[q.id];
+                const isCorrect = userAnswer === q.correctAnswer;
+
+                if (isCorrect) {
+                    correctCount++;
+                } else {
+                    mistakes.push({
+                        questionNum: index + 1,
+                        question: q.question,
+                        correctAnswer: q.correctAnswer,
+                        userAnswer: userAnswer || 'لم تجب'
+                    });
+                }
+
+                // تلوين الخيارات
+                const questionDiv = document.querySelectorAll('.question-container')[index];
+                const options = questionDiv.querySelectorAll('.option');
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                    if (opt.textContent.trim() === q.correctAnswer) {
+                        opt.classList.add('correct');
+                    } else if (opt.classList.contains('selected') && opt.textContent.trim() !== q.correctAnswer) {
+                        opt.classList.add('wrong');
+                    }
+                });
+            });
+
+            // عرض النتائج
+            displayResults(correctCount, mistakes);
+        }
+
+        // وظيفة لعرض النتائج
+        function displayResults(correctCount, mistakes) {
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const score = correctCount;
+            const percentage = (score / 40) * 100;
+            
+            document.getElementById('finalScore').textContent = `${score} / 40`;
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = '🌟 ممتاز! أداء رائع جداً!';
+            } else if (percentage >= 80) {
+                message = '👏 جيد جداً! استمر في التقدم!';
+            } else if (percentage >= 70) {
+                message = '👍 جيد! يمكنك التحسين أكثر!';
+            } else if (percentage >= 60) {
+                message = '📚 مقبول! حاول المراجعة أكثر!';
+            } else {
+                message = '💪 يحتاج إلى مزيد من الدراسة!';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+
+            // عرض الأخطاء
+            if (mistakes.length > 0) {
+                const mistakesSection = document.getElementById('mistakesSection');
+                mistakesSection.classList.remove('hidden');
+                mistakesSection.innerHTML = `
+                    <h3>📝 الأخطاء التي وقعت فيها (${mistakes.length} خطأ)</h3>
+                    ${mistakes.map(m => `
+                        <div class="mistake-item">
+                            <div class="mistake-question">السؤال ${m.questionNum}: ${m.question}</div>
+                            <div class="mistake-details">
+                                <div>✅ الإجابة الصحيحة: <span class="correct-answer">${m.correctAnswer}</span></div>
+                                <div>❌ إجابتك: <span class="your-answer">${m.userAnswer}</span></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                document.getElementById('mistakesSection').classList.add('hidden');
+            }
+        }
+
+        // وظيفة لإعادة الاختبار
+        function restartExam() {
+            userAnswers = {};
+            currentExam = [];
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // وظيفة لعرض شاشة المراجعة
+        function showReview() {
+            const data = currentSubject === 'business' ? businessData : webData;
+            
+            // تحديد عدد الأسئلة
+            const tfCount = data.trueFalse.length;
+            const mcCount = data.multipleChoice.length;
+            
+            document.getElementById('reviewTFTitle').textContent = `أسئلة الصح والخطأ (${tfCount} سؤال)`;
+            document.getElementById('reviewMCTitle').textContent = `أسئلة الاختيارات المتعددة (${mcCount} سؤال)`;
+            
+            // عرض جميع أسئلة الصح والخطأ
+            const tfContainer = document.getElementById('reviewTrueFalse');
+            tfContainer.innerHTML = data.trueFalse.map((q, i) => {
+                const isWrong = q.a === 'خطأ';
+                const icon = isWrong ? '✗' : '✓';
+                const cssClass = isWrong ? 'wrong' : '';
+                return `
+                    <div class="review-item">
+                        <div class="review-question">${i + 1}. ${q.q}</div>
+                        <div class="review-answer ${cssClass}">${icon} ${q.a}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // عرض جميع أسئلة الاختيارات المتعددة
+            const mcContainer = document.getElementById('reviewMultipleChoice');
+            mcContainer.innerHTML = data.multipleChoice.map((q, i) => `
+                <div class="review-item">
+                    <div class="review-question">${i + 1}. ${q.q}</div>
+                    <div class="review-answer">✓ ${q.a}</div>
+                </div>
+            `).join('');
+
+            // إخفاء الشاشة الترحيبية وإظهار شاشة المراجعة
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('reviewScreen').classList.remove('hidden');
+        }
+
+        // وظيفة لبدء الاختبار من شاشة المراجعة
+        function startExamFromReview() {
+            document.getElementById('reviewScreen').classList.add('hidden');
+            startExam();
+        }
+
+        // وظيفة للعودة للصفحة الرئيسية
+        function backToWelcome() {
+            document.getElementById('reviewScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
